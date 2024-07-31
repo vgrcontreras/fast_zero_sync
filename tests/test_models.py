@@ -1,3 +1,5 @@
+from sqlalchemy import select
+
 from fast_zero.models import User
 
 
@@ -8,4 +10,7 @@ def test_create_user(session):
     session.commit()
     session.refresh(user)
 
-    assert user.id == 1
+    result = session.scalar(select(User)
+                            .where(User.username == 'user'))
+
+    assert result.username == 'user'
