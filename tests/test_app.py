@@ -48,10 +48,10 @@ def test_put_update_user(client, user):
     response = client.put(
         '/users/1',
         json={
+            'id': 1,
             'password': '123',
             'username': 'testusername2',
             'email': 'test@test.com',
-            'id': 1,
         },
     )
 
