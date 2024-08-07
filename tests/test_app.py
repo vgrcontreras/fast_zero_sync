@@ -29,6 +29,34 @@ def test_create_user(client):
     }
 
 
+def test_create_user_username_already_exists(client, user):
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'Teste',
+            'password': 'testtest',
+            'email': 'novo@email.com',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Username already exists'}
+
+
+def test_create_user_email_already_exists(client, user):
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'juliana',
+            'password': 'testtest',
+            'email': 'test@test.com',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Email already exists'}
+
+
 def test_read_user(client):
     response = client.get('/users/')
 
@@ -42,6 +70,24 @@ def test_read_user_with_users(client, user):
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'users': [user_schema]}
+
+
+def test_read_user_with_userid(client, user):
+    response = client.get('/users/1')
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        'id': 1,
+        'username': 'Teste',
+        'email': 'test@test.com',
+    }
+
+
+def test_read_user_with_userid_not_found(client, user):
+    response = client.get('/users/2')
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {"detail": "User Not Found"}
 
 
 def test_put_update_user(client, user):
@@ -75,17 +121,6 @@ def test_put_user_not_found(client, user):
 
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {'detail': 'User Not Found'}
-
-
-# def test_get_user_n(client):
-#     response = client.get('/users/1')
-
-#     assert response.status_code == HTTPStatus.OK
-#     assert response.json() == {
-#         'id': 1,
-#         'username': 'victor contreras',
-#         'email': 'test@test.com',
-#     }
 
 
 def test_delete_user(client, user):

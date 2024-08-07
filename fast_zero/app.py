@@ -10,8 +10,6 @@ from fast_zero.schemas import Message, UserList, UserPublic, UserSchema
 
 app = FastAPI()
 
-database = []
-
 
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
 def read_root():
@@ -96,10 +94,12 @@ def delete_user(user_id: int, session: Session = Depends(get_session)):
 
 
 @app.get('/users/{user_id}', response_model=UserPublic)
-def read_user_n(user_id: int):
-    if user_id < 1 or user_id > len(database):
+def read_user_n(user_id: int, session: Session = Depends(get_session)):
+    db_user = session.scalar(select(User).where(User.id == user_id))
+
+    if not db_user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User Not Found'
         )
 
-    return database[user_id - 1]
+    return db_user
