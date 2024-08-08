@@ -87,7 +87,7 @@ def test_read_user_with_userid_not_found(client, user):
     response = client.get('/users/2')
 
     assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {"detail": "User Not Found"}
+    assert response.json() == {'detail': 'User Not Found'}
 
 
 def test_put_update_user(client, user):
