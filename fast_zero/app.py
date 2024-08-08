@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from fast_zero.database import get_session
 from fast_zero.models import User
 from fast_zero.schemas import Message, Token, UserList, UserPublic, UserSchema
-from fast_zero.security import get_password_hash, verify_password, create_access_token
+from fast_zero.security import (
+    create_access_token,
+    get_password_hash,
+    verify_password,
+)
 
 app = FastAPI()
 
@@ -109,7 +113,7 @@ def read_user_n(user_id: int, session: Session = Depends(get_session)):
     return db_user
 
 
-@app.post('/token/', response_model=Token)
+@app.post('/token', response_model=Token)
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: Session = Depends(get_session),
@@ -121,7 +125,7 @@ def login_for_access_token(
             status_code=HTTPStatus.BAD_REQUEST,
             detail='Incorrect email or password',
         )
-    
-    access_token = create_access_token(data={'sub': user.email})
+
+    access_token = create_access_token(data_payload={'sub': user.email})
 
     return {'access_token': access_token, 'token_type': 'Bearer'}
