@@ -26,9 +26,9 @@ def test_create_user_username_already_exists(client, user):
     response = client.post(
         '/users/',
         json={
-            'username': 'Teste',
+            'username': 'test1',
             'password': 'testtest',
-            'email': 'novo@email.com',
+            'email': 'test1@test.com',
         },
     )
 
@@ -40,9 +40,9 @@ def test_create_user_email_already_exists(client, user):
     response = client.post(
         '/users/',
         json={
-            'username': 'juliana',
+            'username': 'novo_usuario',
             'password': 'testtest',
-            'email': 'test@test.com',
+            'email': 'test1@test.com',
         },
     )
 
@@ -66,7 +66,7 @@ def test_read_user_with_users(client, user):
 
 
 def test_read_user_with_userid(client, user):
-    response = client.get('/users/1')
+    response = client.get(f'/users/{user.id}')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
@@ -85,7 +85,7 @@ def test_read_user_with_userid_not_found(client, user):
 
 def test_put_update_user(client, user, token):
     response = client.put(
-        '/users/1',
+        f'/users/{user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'id': 1,
@@ -102,9 +102,9 @@ def test_put_update_user(client, user, token):
     }
 
 
-def test_put_user_not_authorized(client, user, token):
+def test_put_user_not_authorized(client, other_user, token):
     response = client.put(
-        '/users/2',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'id': 2,
@@ -126,9 +126,9 @@ def test_delete_user(client, user, token):
     assert response.json() == {'message': 'User deleted'}
 
 
-def test_delete_user_not_authorized(client, user, token):
+def test_delete_user_not_authorized(client, other_user, token):
     response = client.delete(
-        '/users/2', headers={'Authorization': f'Bearer {token}'}
+        f'/users/{other_user.id}', headers={'Authorization': f'Bearer {token}'}
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN

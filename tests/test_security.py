@@ -36,3 +36,10 @@ def test_get_current_user_without_sub():
 
     assert excinfo.value.status_code == HTTPStatus.UNAUTHORIZED
     assert excinfo.value.detail == 'Could not validate credentials'
+
+
+def test_get_current_user_not_found():
+    token = create_access_token({'sub': 'usuario_inexistente'})
+
+    with pytest.raises(HTTPException):
+        get_current_user(token)
