@@ -26,7 +26,7 @@ def test_create_user_username_already_exists(client, user):
     response = client.post(
         '/users/',
         json={
-            'username': 'test1',
+            'username': user.username,
             'password': 'testtest',
             'email': 'test1@test.com',
         },
@@ -42,7 +42,7 @@ def test_create_user_email_already_exists(client, user):
         json={
             'username': 'novo_usuario',
             'password': 'testtest',
-            'email': 'test1@test.com',
+            'email': user.email,
         },
     )
 
@@ -70,9 +70,9 @@ def test_read_user_with_userid(client, user):
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        'id': 1,
-        'username': 'Teste',
-        'email': 'test@test.com',
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
     }
 
 
