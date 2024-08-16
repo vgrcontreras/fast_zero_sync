@@ -39,5 +39,6 @@ class ToDoSchema(BaseModel):
 class ToDoPublic(ToDoSchema):
     id: int
 
+
 class ToDoList(BaseModel):
     todos: list[ToDoPublic]
