@@ -42,3 +42,9 @@ class ToDoPublic(ToDoSchema):
 
 class ToDoList(BaseModel):
     todos: list[ToDoPublic]
+
+
+class ToDoUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    state: ToDoState | None = None
