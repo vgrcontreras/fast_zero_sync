@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
-from tests.conftest import ToDoFactory
 from fast_zero.models import ToDoState
+from tests.conftest import ToDoFactory
 
 
 def test_create_todo(client, token, user):
@@ -92,9 +92,7 @@ def test_list_todos_filter_state_should_return_5_todos(
 ):
     expected_todos = 5
     session.bulk_save_objects(
-        ToDoFactory.create_batch(
-            5, user_id=user.id, state=ToDoState.draft
-        )
+        ToDoFactory.create_batch(5, user_id=user.id, state=ToDoState.draft)
     )
     session.commit()
 
@@ -104,3 +102,54 @@ def test_list_todos_filter_state_should_return_5_todos(
     )
 
     assert len(response.json()['todos']) == expected_todos
+
+
+def test_delete_todo(session, token, client, user):
+    todo = ToDoFactory(user_id=user.id)
+
+    session.add(todo)
+    session.commit()
+    session.refresh(todo)
+
+    response = client.delete(
+        f'/todos/{todo.id}', headers={'Authorization': f'Bearer {token}'}
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {'message': 'Task deleted successfully'}
+
+
+def test_delete_not_found(client, token):
+    response = client.delete(
+        '/todos/10', headers={'Authorization': f'Bearer {token}'}
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Task not found'}
+
+
+def test_patch_todo(user, session, client, token):
+    todo = ToDoFactory(user_id=user.id)
+
+    session.add(todo)
+    session.commit()
+
+    response = client.patch(
+        f'/todos/{todo.id}',
+        json={'title': 'teste!'},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()['title'] == 'teste!'
+
+
+def teste_patch_not_found(client, token):
+    response = client.patch(
+        '/todos/10',
+        json={'title': 'teste'},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Task not found'}
