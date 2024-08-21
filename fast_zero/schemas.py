@@ -38,7 +38,6 @@ class ToDoSchema(BaseModel):
     state: ToDoState
 
 
-
 class ToDoPublic(ToDoSchema):
     id: int
     created_at: datetime
