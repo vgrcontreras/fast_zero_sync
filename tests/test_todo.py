@@ -21,6 +21,8 @@ def test_create_todo(client, token, user):
         'title': 'Test todo',
         'description': 'Test todo description',
         'state': 'draft',
+        'created_at': f'{response.json()['created_at']}',
+        'updated_at': f'{response.json()['updated_at']}',
     }
 
 
